@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeff's Hungry</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #game-area {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-color: lightblue;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #frog {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 50px solid darkblue;
+            top: 90%;
+            left: 45%;
+        }
+
+        #target {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: gold;
+            border-radius: 50%;
+        }
+
+        .obstacle {
+            position: absolute;
+            width: 100px;
+            height: 20px;
+            background-color: brown;
+        }
+
+        .vObstacle {
+            position: absolute;
+            width: 20px;
+            height: 100px;
+            background-color: darkred;
+        }
+
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        #menu {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-area">
+        <div id="frog"></div>
+        <div id="target"></div>
+        <div id="obstacle1" class="obstacle"></div>
+        <div id="obstacle2" class="obstacle"></div>
+        <div id="obstacle3" class="obstacle"></div>
+        <div id="obstacle4" class="obstacle"></div>
+        <div id="obstacle5" class="obstacle"></div>
+        <div id="vObstacle1" class="vObstacle"></div>
+        <div id="vObstacle2" class="vObstacle"></div>
+        <div id="vObstacle3" class="vObstacle"></div>
+        <div id="vObstacle4" class="vObstacle"></div>
+        <div id="message"></div>
+        <div id="menu">
+            <button onclick="restartGame()">Play Again</button>
+            <button onclick="goToResume()">Go to Resume</button>
+        </div>
+    </div>
+    <script>
+        const frog = document.getElementById('frog');
+        const target = document.getElementById('target');
+        const message = document.getElementById('message');
+        const obstacles = [
+            document.getElementById('obstacle1'),
+            document.getElementById('obstacle2'),
+            document.getElementById('obstacle3'),
+            document.getElementById('obstacle4'),
+            document.getElementById('obstacle5'),
+        ];
+        const verticalObstacles = [
+            document.getElementById('vObstacle1'),
+            document.getElementById('vObstacle2'),
+            document.getElementById('vObstacle3'),
+            document.getElementById('vObstacle4'),
+        ];
+        const step = 20; // Movement step
+        let gameOver = false;
+        let animationFrameId;
+        const obstacleSpeeds = [];
+        const verticalSpeeds = [];
+
+        // Set random position for target
+        function setRandomTargetPosition() {
+            const gameArea = document.getElementById('game-area');
+            const gameWidth = gameArea.offsetWidth - 50;
+            const randomX = Math.random() * gameWidth;
+            target.style.left = `${randomX}px`;
+            target.style.top = '10px';
+        }
+
+        // Set random positions and speeds for obstacles
+        function randomizeObstacles() {
+            const gameArea = document.getElementById('game-area');
+            const gameWidth = gameArea.offsetWidth;
+            const gameHeight = gameArea.offsetHeight;
+
+            obstacles.forEach((obstacle, index) => {
+                obstacle.style.top = `${(index + 1) * (gameHeight / 6)}px`;
+                obstacle.style.left = `${Math.random() * gameWidth}px`;
+                obstacleSpeeds[index] = (Math.random() * 2 + 1) * (Math.random() < 0.5 ? 1 : -1);
+            });
+
+            verticalObstacles.forEach((obstacle, index) => {
+                obstacle.style.left = `${(index + 1) * (gameWidth / 5)}px`;
+                obstacle.style.top = `${Math.random() * gameHeight}px`;
+                verticalSpeeds[index] = (Math.random() * 2 + 1) * (Math.random() < 0.5 ? 1 : -1);
+            });
+        }
+
+        // Restart game
+        function restartGame() {
+            cancelAnimationFrame(animationFrameId);
+            frog.style.top = '90%';
+            frog.style.left = '45%';
+            message.style.display = 'none';
+            gameOver = false;
+
+            setRandomTargetPosition();
+            randomizeObstacles();
+            moveObstacles();
+
+            window.addEventListener('keydown', moveFrog);
+        }
+
+        // Navigate to resume page
+        function goToResume() {
+            window.location.href = 'resume from scratch.html';
+        }
+
+        // Move obstacles
+        function moveObstacles() {
+            const gameArea = document.getElementById('game-area');
+            const gameWidth = gameArea.offsetWidth;
+            const gameHeight = gameArea.offsetHeight;
+
+            obstacles.forEach((obstacle, index) => {
+                let position = parseFloat(obstacle.style.left);
+                position += obstacleSpeeds[index];
+                if (position > gameWidth) position = -100;
+                if (position < -100) position = gameWidth;
+                obstacle.style.left = `${position}px`;
+            });
+
+            verticalObstacles.forEach((obstacle, index) => {
+                let position = parseFloat(obstacle.style.top);
+                position += verticalSpeeds[index];
+                if (position > gameHeight) position = -100;
+                if (position < -100) position = gameHeight;
+                obstacle.style.top = `${position}px`;
+            });
+
+            if (!gameOver) {
+                checkCollision();
+                animationFrameId = requestAnimationFrame(moveObstacles);
+            }
+        }
+
+        // Check collision
+        function checkCollision() {
+            const frogRect = frog.getBoundingClientRect();
+
+            [...obstacles, ...verticalObstacles].forEach(obstacle => {
+                const obstacleRect = obstacle.getBoundingClientRect();
+
+                if (
+                    frogRect.left < obstacleRect.right &&
+                    frogRect.right > obstacleRect.left &&
+                    frogRect.top < obstacleRect.bottom &&
+                    frogRect.bottom > obstacleRect.top
+                ) {
+                    gameOver = true;
+                    message.textContent = 'You Lose!';
+                    message.style.display = 'block';
+                    cancelAnimationFrame(animationFrameId);
+                    window.removeEventListener('keydown', moveFrog);
+                }
+            });
+        }
+
+        // Move frog
+        function moveFrog(event) {
+            if (gameOver) return;
+
+            const gameArea = document.getElementById('game-area');
+            const frogRect = frog.getBoundingClientRect();
+
+            switch (event.key) {
+                case 'ArrowUp':
+                    if (frogRect.top > gameArea.offsetTop) frog.style.top = frog.offsetTop - step + 'px';
+                    break;
+                case 'ArrowDown':
+                    if (frogRect.bottom < gameArea.offsetHeight) frog.style.top = frog.offsetTop + step + 'px';
+                    break;
+                case 'ArrowLeft':
+                    if (frogRect.left > gameArea.offsetLeft) frog.style.left = frog.offsetLeft - step + 'px';
+                    break;
+                case 'ArrowRight':
+                    if (frogRect.right < gameArea.offsetWidth) frog.style.left = frog.offsetLeft + step + 'px';
+                    break;
+            }
+
+            checkWin();
+        }
+
+        // Check win
+        function checkWin() {
+            const frogRect = frog.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+
+            if (
+                frogRect.left < targetRect.right &&
+                frogRect.right > targetRect.left &&
+                frogRect.top < targetRect.bottom &&
+                frogRect.bottom > targetRect.top
+            ) {
+                gameOver = true;
+                message.textContent = 'You Win!';
+                message.style.display = 'block';
+                cancelAnimationFrame(animationFrameId);
+                window.removeEventListener('keydown', moveFrog);
+            }
+        }
+
+        randomizeObstacles();
+        setRandomTargetPosition();
+        moveObstacles();
+
+        window.addEventListener('keydown', moveFrog);
+    </script>
+</body>
+</html>

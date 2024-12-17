@@ -1,0 +1,115 @@
+/* body{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+
+} */
+.section-heading-lower{
+    font-family: Jazz LET;
+    text-shadow: #333;
+    font-weight: bolder;
+}
+.mb-3{
+    font-family: OCR A Std, monospace;
+    color:#0056b3;
+}
+#mainNav{
+    background-color: rgba(0, 0, 0, 0.728);
+}
+.bg-faded {
+    background-color: skyblue;
+  }
+.mb-0{
+    font-family: OCR A Std, monospace;
+    color:#0056b3;
+}
+.copyright-text{
+    color: yellow;
+    font-family: 'Times New Roman', Times, serif;
+}
+.introtext{
+   margin-bottom: 30px;
+}
+.intro-img{
+    display: block;  /* Ensures the image behaves like a block-level element */
+    width: 100%;      /* Makes the image responsive */
+    max-width: 100%;  /* Ensures it doesn't stretch beyond its container */
+    height: auto;     /* Keeps the image's aspect ratio */
+    margin-top: 30px; /* Adds some space above the image */
+}
+iframe{
+    border: 5px solid darkgray;
+    padding: 5px;
+}
+.video-format{
+    display: block !important;
+   margin: auto;
+}
+
+
+/* SCRATCH PAGE FONTS */
+
+.resume-header{
+    font-family:cursive;
+    text-align: center;
+    color: brown;
+    background-color: bisque;
+}
+.resume-header4{
+    color: cadetblue;
+    text-decoration: underline;
+}
+.resume-paragraph{
+    display: flex;
+    justify-content: space-between; /* Aligns left and right content */
+    align-items: center; /* Vertically center content */
+}
+.resumedate{
+    display: inline-block;
+    text-align: right;
+}
+body {
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 1.6;
+    margin: 20px;
+    padding: 20px;
+    background-color:burlywood;
+    color: black;
+}
+h1, h2 {
+    color: #0056b3;
+}
+.header {
+    text-align: center;
+}
+.header h1 {
+    margin: 0;
+}
+.resume-section {
+    margin-top: 20px;
+}
+.resuem-section h2 {
+    margin-bottom: 10px;
+}
+.resume-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+.resume-section ul li {
+    margin-bottom: 5px;
+}
+.contact-info {
+    text-align: center;
+    margin-bottom: 20px;
+}
+#resumenav{
+    background-color: darkseagreen;
+}
+.resumelinks:hover{
+    text-decoration: overline;
+    color: yellow;
+}
+.job{
+ font-style: italic;
+}
+.bold{
+    font-weight: bold;
+}
